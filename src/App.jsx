@@ -51,6 +51,13 @@ const Wrapper = styled.div`
         }
     }
 
+    .typed-keys {
+        margin-top: 20px;
+        font-size: 1.3rem;
+        width: 600px;
+        overflow: hidden;
+    }
+
     .completed-words {
         width: max-content;
         height: 100vh;
@@ -75,7 +82,7 @@ const App = (props) => {
                     <span className="matched">hellowor</span>
                     <span className="remainder">ld</span>
                 </div>
-                <div className="typed-keys"></div>
+                <div className="typed-keys">sdhasjdhelloworsdjasd</div>
                 <div className="completed-words">
                     <ol>
                         <li>programmed</li>
