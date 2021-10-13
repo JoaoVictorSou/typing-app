@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import Rubik from './fonts/Rubik-VariableFont_wght.ttf'
+import wordList from './resources/words.json'
+
+import Word from './components/Word'
 
 const GlobalStyle = createGlobalStyle`
     @font-face {
@@ -27,29 +30,13 @@ const GlobalStyle = createGlobalStyle`
 `
 
 const Wrapper = styled.div`
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    .valid-keys {
-        font-size: 10em;
-        font-weight: bold;
-        min-width: 600px;
-        border-bottom: solid 2px #f1f1f1;
-
-        .matched {
-            background-color: #fdf8c5;
-            color: #282c24
-        }
-
-        .remainder {
-            opacity: 0.5;
-        }
-    }
 
     .typed-keys {
         margin-top: 20px;
@@ -73,16 +60,49 @@ const Wrapper = styled.div`
     }
 `
 
+const getWord = () => {
+    const index = Math.floor(Math.random() * wordList.length)
+    const word = wordList[index]
+
+    return word.toLowerCase()
+}
+
+const isValidKey = (word, key) => {
+    return word ? word.includes(key) : false
+}
+
 const App = (props) => {
+    const [typedKeys, setTypedKeys] = useState([])
+    const [validKeys, setValidKeys] = useState([])
+    const [word, setWord] = useState('')
+
+    useEffect(() => {
+        setWord(getWord())
+    }, [])
+
+    const handleKeyDown = (e) =>{
+        e.preventDefault()
+        const {key} = e
+
+        setTypedKeys((prevTypedKeys) => {
+            return [...prevTypedKeys, key].slice(-30)
+        })
+
+        if(isValidKey(word, key)){
+            setValidKeys((prev) => {
+                const isValidLength = prev.length <= word.length
+                const isNextChar = isValidLength && word[prev.length] === key
+                return isNextChar ? [...prev, key] : [...prev]
+            })
+        }
+    }
+    
     return (
         <React.Fragment>
             <GlobalStyle />
-            <Wrapper>
-                <div className="valid-keys">
-                    <span className="matched">hellowor</span>
-                    <span className="remainder">ld</span>
-                </div>
-                <div className="typed-keys">sdhasjdhelloworsdjasd</div>
+            <Wrapper tabIndex="0" onKeyDown={handleKeyDown}>
+                <Word word={word} validKeys={ validKeys } /> 
+                <div className="typed-keys">{typedKeys ? typedKeys.join(' ') : null}</div>
                 <div className="completed-words">
                     <ol>
                         <li>programmed</li>
