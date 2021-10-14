@@ -54,6 +54,7 @@ const Wrapper = styled.div`
         right: 0;
         text-align: left;
         padding: 20px 40px;
+        padding-left: 80px;
         font-size: 1.8em;
         line-height: 2.5rem;
         opacity: 0.5;
@@ -74,11 +75,27 @@ const isValidKey = (word, key) => {
 const App = (props) => {
     const [typedKeys, setTypedKeys] = useState([])
     const [validKeys, setValidKeys] = useState([])
+    const [completedWords, setCompletedWords] = useState([])
     const [word, setWord] = useState('')
 
     useEffect(() => {
         setWord(getWord())
     }, [])
+
+    useEffect(() => {
+        const wordFromValidKeys = validKeys.join('').toLowerCase()
+
+        if (word && word === wordFromValidKeys) {
+            setCompletedWords(prev => [...prev, word])
+            setValidKeys([])
+
+            let newWord = null
+            do {
+                newWord = getWord()
+            } while (completedWords.includes(newWord))
+            setWord(newWord)
+        }
+    }, [word, validKeys, completedWords])
 
     const handleKeyDown = (e) =>{
         e.preventDefault()
@@ -94,9 +111,11 @@ const App = (props) => {
                 const isNextChar = isValidLength && word[prev.length] === key
                 return isNextChar ? [...prev, key] : [...prev]
             })
-        }
+        }   
     }
     
+    const completedList = completedWords.map((element, key) => <li key={key}>{element}</li>)
+
     return (
         <React.Fragment>
             <GlobalStyle />
@@ -105,9 +124,7 @@ const App = (props) => {
                 <div className="typed-keys">{typedKeys ? typedKeys.join(' ') : null}</div>
                 <div className="completed-words">
                     <ol>
-                        <li>programmed</li>
-                        <li>circuit</li>
-                        <li>javascript</li>
+                        {completedList}
                     </ol>
                 </div>
             </Wrapper>
